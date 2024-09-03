@@ -12,3 +12,39 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User{
+  id                Int  @id  @default(autoincrement())
+  firstName         String
+  lastName          String
+  userName          String
+  password          String
+  friends           User[]  @relation("friends")
+  friendsFollowing  User[]  @relation("friends")
+  post              Post?
+  comment           Comment?
+  requests          Request[]
+}
+
+model Post{
+  id      Int   @id   @default(autoincrement())
+  text    String
+  img     String?
+  likes   Int   
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique // relation scalar field (used in the `@relation` attribute above)
+}
+
+model Comment{
+  id      Int   @id   @default(autoincrement())
+  text    String
+  likes   Int   
+  user    User  @relation(fields: [userId], references: [id])
+  userId  Int   @unique
+}
+
+model Request{
+  id          Int   @id   @default(autoincrement())
+  response    String  
+  users       User[]
+}
