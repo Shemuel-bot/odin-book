@@ -15,10 +15,11 @@ datasource db {
 
 model User{
   id                Int  @id  @default(autoincrement())
-  firstName         String
-  lastName          String
-  userName          String
+  gitId             Int ?
+  userName          String  @unique
+  email             String? 
   password          String
+  img               String
   friends           User[]  @relation("friends")
   friendsFollowing  User[]  @relation("friends")
   post              Post?
@@ -30,15 +31,17 @@ model Post{
   id      Int   @id   @default(autoincrement())
   text    String
   img     String?
-  likes   Int   
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @unique // relation scalar field (used in the `@relation` attribute above)
+  likes   Int 
+  date    DateTime    @default(now())
+  user    User @relation(fields: [userId], references: [id])
+  userId  Int  @unique 
 }
 
 model Comment{
   id      Int   @id   @default(autoincrement())
   text    String
   likes   Int   
+  postId  Int
   user    User  @relation(fields: [userId], references: [id])
   userId  Int   @unique
 }
