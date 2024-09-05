@@ -23,9 +23,10 @@ exports.comment_post = [
         }
 
         await prisma.comment.create({
-            data: {
+            data:{
                 text: req.text,
                 likes: 0,
+                postId: req.body.postId,
                 user: req.user
             }
         })
@@ -34,6 +35,17 @@ exports.comment_post = [
         })
     })
 ]
+
+exports.post_comments = asyncHandler(async (req, res) => {
+    const comments = await prisma.comment.findMany({
+        where: {
+            postId: req.params.id
+        }
+    })
+    res.json({
+        message: comments,    
+    })
+})
 
 exports.comments_get = asyncHandler(async (req, res) => {
     const comments = await prisma.comment.findMany();

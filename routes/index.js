@@ -21,22 +21,22 @@ router.get('/api/v1/users', User.users_get);
 router.post('/api/v1/users', User.users_post);
 
 
-// router.get('/api/v1/comments',);
+router.get('/api/v1/comments', Comment.comments_get);
 
-// router.get('/api/v1/comments/:id',);
+router.get('/api/v1/posts/comments/:id', Comment.post_comments);
 
-// router.post('/api/v1comments',)
+router.post('/api/v1/comments', Comment.comment_post)
 
 
 // router.get('/api/v1/posts',);
 
-// router.get('/api/v1/posts/:id',);
+// router.get('/api/v1/users/posts/:id',);
 
 // router.post('/api/v1/posts',);
 
 
-// router.post('/api/request',);
+// router.post('/api/v1/request',);
 
-// router.post('/api/request/');
+// router.post('/api/v1/request/');
 
 module.exports = router;
