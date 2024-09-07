@@ -25,18 +25,24 @@ router.get('/api/v1/comments', Comment.comments_get);
 
 router.get('/api/v1/posts/comments/:id', Comment.post_comments);
 
+router.get('/api/v1/comments/likes/:id', Comment.comments_like);
+
 router.post('/api/v1/comments', Comment.comment_post)
 
 
-// router.get('/api/v1/posts',);
+router.get('/api/v1/posts', Post.posts_get);
 
-// router.get('/api/v1/users/posts/:id',);
+router.get('/api/v1/users/posts/:id', Post.users_posts);
 
-// router.post('/api/v1/posts',);
+router.get('/api/v1/posts/likes/:id', Post.posts_like)
+
+router.post('/api/v1/posts', Post.posts_post);
 
 
-// router.post('/api/v1/request',);
+router.post('/api/v1/request/:id', Request.request_post);
 
-// router.post('/api/v1/request/');
+router.post('/api/v1/request/:id', Request.request_response);
+
+router.get('/api/v1/users/request', Request.request_get)
 
 module.exports = router;
