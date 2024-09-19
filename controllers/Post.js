@@ -11,6 +11,8 @@ const prisma = new PrismaClient();
 
 
 exports.posts_post = asyncHandler(async (req, res) => {
+    
+
     if(req.body.img === "" && req.body.text ===""){
         res.json({
             message: false,
@@ -40,6 +42,40 @@ exports.posts_get = asyncHandler(async (req, res) => {
         message: posts,
     })
 })
+
+
+exports.posts_get_latest = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        take: 30,
+        orderBy: {
+            date: 'asc'
+        }
+    })
+
+    res.json({
+        message: posts,
+    })
+})
+
+
+exports.posts_get_photos = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        take: 30,
+        where:{
+            img: {
+                not: '',
+            }
+        },
+        orderBy: {
+            date: 'asc'
+        }
+    })
+
+    res.json({
+        message: posts,
+    })
+})
+
 
 exports.users_posts = asyncHandler(async (req, res) => {
     const posts = await prisma.post.findMany({

@@ -33,17 +33,17 @@ model Post{
   img     String?
   likes   Int 
   date    DateTime    @default(now())
-  user    User @relation(fields: [userId], references: [id])
-  userId  Int  @unique 
+  user     User  @relation(fields: [username], references: [userName])
+  username String   @unique
 }
 
 model Comment{
-  id      Int   @id   @default(autoincrement())
-  text    String
-  likes   Int   
-  postId  Int
-  user    User  @relation(fields: [userId], references: [id])
-  userId  Int   @unique
+  id       Int   @id   @default(autoincrement())
+  text     String
+  likes    Int   
+  postId   Int
+  user     User  @relation(fields: [username], references: [userName])
+  username String   @unique
 }
 
 model Request{
