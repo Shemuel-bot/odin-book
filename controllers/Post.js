@@ -72,6 +72,7 @@ exports.posts_get = asyncHandler(async (req, res) => {
 
 
 exports.posts_get_latest = asyncHandler(async (req, res) => {
+    const user = await getUserFromToken.get_user(req.headers["authorization"])
     const posts = await prisma.post.findMany({
         take: 30,
         orderBy: {
@@ -80,6 +81,7 @@ exports.posts_get_latest = asyncHandler(async (req, res) => {
     })
     res.json({
         message: posts,
+        userid: user.id
     })
 })
 
@@ -151,16 +153,15 @@ exports.posts_dislike = asyncHandler(async (req, res) => {
             id: Number(req.body.id)
         }
     })
-
+    const array = post.likesId
+    array.splice(array.indexOf(user.id), 1)
     await prisma.post.update({
         where: {
             id: Number(req.body.id),
         },
         data:{
             likes: post.likes - 1,
-            likesId:{
-                push: user.id,
-            }
+            likesId: array
         }
     }).catch(err => {console.log(err)})
 

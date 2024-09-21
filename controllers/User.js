@@ -6,6 +6,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const { ResultWithContextImpl } = require("express-validator/lib/chain");
+const getUserFromToken = require('../public/javascripts/getUserFromToken')
 
 const prisma = new PrismaClient();
 
@@ -68,7 +69,14 @@ exports.user = asyncHandler(async (req, res) => {
 });
 
 exports.users_get = asyncHandler(async (req, res) => {
-  const users = await prisma.user.findMany();
+  const user = await getUserFromToken.get_user(req.headers['authorization'])
+  const users = await prisma.user.findMany({
+    where:{
+      NOT:{
+        id: user.id
+      }
+    }
+  });
   res.json({
     message: users,
   });
