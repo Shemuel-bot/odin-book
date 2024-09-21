@@ -59,7 +59,6 @@ exports.user = asyncHandler(async (req, res) => {
                 gitId: data.id,
             }
         })
-        console.log(user)
         res.json(user)
     })
     

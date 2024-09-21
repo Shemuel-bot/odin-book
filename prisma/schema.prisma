@@ -22,19 +22,19 @@ model User{
   img               String
   friends           User[]  @relation("friends")
   friendsFollowing  User[]  @relation("friends")
-  post              Post?
   comment           Comment?
   requests          Request[]
 }
 
 model Post{
-  id      Int   @id   @default(autoincrement())
-  text    String?
-  img     String?
-  likes   Int 
-  date    DateTime    @default(now())
-  user     User  @relation(fields: [username], references: [userName])
-  username String   @unique
+  id       Int   @id   @default(autoincrement())
+  text     String?
+  img      String?
+  likes    Int 
+  likesId  Int[]
+  date     DateTime    @default(now())
+  username String  
+  profile  String?
 }
 
 model Comment{

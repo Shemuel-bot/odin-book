@@ -38,7 +38,11 @@ router.get('/api/v1/posts/latest', Post.posts_get_latest);
 
 router.get('/api/v1/users/posts/:id', Post.users_posts);
 
-router.get('/api/v1/posts/likes/:id', Post.posts_like)
+router.get('/delete', Post.delete_all)
+
+router.post('/api/v1/posts/likes', Post.posts_like)
+
+router.post('/api/v1/posts/dislikes', Post.posts_dislike)
 
 router.post('/api/v1/posts', Post.posts_post);
 
