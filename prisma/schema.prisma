@@ -22,7 +22,6 @@ model User{
   img               String
   friends           User[]  @relation("friends")
   friendsFollowing  User[]  @relation("friends")
-  comment           Comment?
   requests          Request[]
 }
 
@@ -42,8 +41,8 @@ model Comment{
   text     String
   likes    Int   
   postId   Int
-  user     User  @relation(fields: [username], references: [userName])
-  username String   @unique
+  username String
+  profile  String?
 }
 
 model Request{

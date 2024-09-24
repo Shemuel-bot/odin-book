@@ -25,7 +25,7 @@ router.post('/api/v1/users', User.users_post);
 
 router.get('/api/v1/comments', Comment.comments_get);
 
-router.get('/api/v1/posts/comments/:id', Comment.post_comments);
+router.post('/api/v1/posts/comments', Comment.post_comments);
 
 router.get('/api/v1/comments/likes/:id', Comment.comments_like);
 

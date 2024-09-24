@@ -46,26 +46,13 @@ exports.users_post = [
 ];
 
 exports.user = asyncHandler(async (req, res) => {
-  const bearerHeader = req.headers["authorization"];
-  if (typeof bearerHeader !== "undefined" && bearerHeader !== "null") {
-    
-    await fetch('https://api.github.com/user', {
-        method: 'GET',
-        headers: { "Authorization" : bearerHeader }
-    }).then(res => {
-        return res.json()
-    }).then(async data => {
-       const user = await prisma.user.findFirst({
-            where: {
-                gitId: data.id,
-            }
-        })
-        res.json(user)
-    })
-    
-  } else {
-    res.sendStatus(403);
+  const user = getUserFromToken.get_user(req.headers['authorization'])
+  if(!user){
+    res.send(403)
   }
+  res.json({
+    user: user
+  })
 });
 
 exports.users_get = asyncHandler(async (req, res) => {

@@ -6,6 +6,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const LocalStrategy = require('passport-local').Strategy;
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
+const getUserFromToken = require('../public/javascripts/getUserFromToken')
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,7 @@ exports.comment_post = [
         .isLength({ min: 1 })
         .escape(),
     asyncHandler(async (req, res) => {
+        const user = await getUserFromToken.get_user(req.headers['authorization'])
         const errors = validationResult(req)
         if(!errors.isEmpty()){
             res.json({
@@ -24,10 +26,11 @@ exports.comment_post = [
 
         await prisma.comment.create({
             data:{
-                text: req.text,
+                text: req.body.text,
                 likes: 0,
                 postId: req.body.postId,
-                user: req.user
+                username: user.userName,
+                profile: user.img
             }
         })
         res.json({
@@ -39,7 +42,7 @@ exports.comment_post = [
 exports.post_comments = asyncHandler(async (req, res) => {
     const comments = await prisma.comment.findMany({
         where: {
-            postId: Number(req.params.id)
+            postId: Number(req.body.id)
         }
     })
     res.json({
