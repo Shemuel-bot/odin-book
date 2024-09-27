@@ -50,6 +50,7 @@ exports.posts_post = asyncHandler(async (req, res) => {
 
 exports.delete_all = asyncHandler(async (req, res) => {
     await prisma.post.deleteMany()
+    await prisma.comment.deleteMany()
     res.json({
         message: true
     })
@@ -66,7 +67,7 @@ exports.posts_get = asyncHandler(async (req, res) => {
     })
     res.json({
         message: posts,
-        userid: user.id
+        userId: user.id
     })
 })
 
@@ -108,7 +109,7 @@ exports.posts_get_photos = asyncHandler(async (req, res) => {
 exports.users_posts = asyncHandler(async (req, res) => {
     const posts = await prisma.post.findMany({
         where:{
-            userId: Number(req.params.id)
+            username: req.params.username
         },
         orderBy: {
             likes: 'desc'
@@ -117,6 +118,20 @@ exports.users_posts = asyncHandler(async (req, res) => {
 
     res.json({
         message: posts,
+    })
+})
+
+exports.user_posts_liked = asyncHandler(async (req, res) => {
+    const posts = await prisma.post.findMany({
+        where:{
+            likesId: {
+                has: Number(req.params.id)
+            }
+        }
+    })
+
+    res.json({
+        message: posts
     })
 })
 

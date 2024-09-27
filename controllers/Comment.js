@@ -42,7 +42,7 @@ exports.comment_post = [
 exports.post_comments = asyncHandler(async (req, res) => {
     const comments = await prisma.comment.findMany({
         where: {
-            postId: Number(req.body.id)
+            postId:req.body.id
         }
     })
     res.json({
@@ -53,6 +53,17 @@ exports.post_comments = asyncHandler(async (req, res) => {
 
 exports.comments_get = asyncHandler(async (req, res) => {
     const comments = await prisma.comment.findMany();
+    res.json({
+        message: comments
+    })
+})
+
+exports.user_replies = asyncHandler(async (req, res) => {
+    const comments = await prisma.comment.findMany({
+        where: {
+            username: req.params.username
+        }
+    })
     res.json({
         message: comments
     })

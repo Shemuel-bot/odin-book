@@ -29,6 +29,8 @@ router.post('/api/v1/posts/comments', Comment.post_comments);
 
 router.get('/api/v1/comments/likes/:id', Comment.comments_like);
 
+router.get('/api/v1/user/comments/:username', Comment.user_replies)
+
 router.post('/api/v1/comments', Comment.comment_post)
 
 
@@ -36,7 +38,9 @@ router.get('/api/v1/posts/top', Post.posts_get);
 
 router.get('/api/v1/posts/latest', Post.posts_get_latest);
 
-router.get('/api/v1/users/posts/:id', Post.users_posts);
+router.get('/api/v1/users/posts/:username', Post.users_posts);
+
+router.get('/api/v1/user/posts/liked/:id', Post.user_posts_liked)
 
 router.get('/delete', Post.delete_all)
 

@@ -46,12 +46,12 @@ exports.users_post = [
 ];
 
 exports.user = asyncHandler(async (req, res) => {
-  const user = getUserFromToken.get_user(req.headers['authorization'])
+  const user = await getUserFromToken.get_user(req.headers['authorization'])
   if(!user){
     res.send(403)
   }
   res.json({
-    user: user
+    message: user
   })
 });
 
