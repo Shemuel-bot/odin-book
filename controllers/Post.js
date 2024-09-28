@@ -82,7 +82,7 @@ exports.posts_get_latest = asyncHandler(async (req, res) => {
     })
     res.json({
         message: posts,
-        userid: user.id
+        userId: user.id
     })
 })
 

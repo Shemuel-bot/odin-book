@@ -20,8 +20,8 @@ model User{
   email             String? 
   password          String
   img               String
-  friends           User[]  @relation("friends")
-  friendsFollowing  User[]  @relation("friends")
+  followers         Int[]
+  following         Int[]
   requests          Request[]
 }
 
