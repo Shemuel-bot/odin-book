@@ -254,6 +254,7 @@ passport.use(
             gitId: Number(profile.id),
             userName: profile.username,
             img: profile.photos[0].value,
+            bio: "",
             password: "",
           },
         });
