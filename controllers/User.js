@@ -10,6 +10,12 @@ const getUserFromToken = require("../public/javascripts/getUserFromToken");
 
 const prisma = new PrismaClient();
 
+exports.users_delete = asyncHandler(async (req, res) => {
+  await prisma.user.deleteMany()
+  await prisma.post.delete()
+  await prisma.comment.delete()
+})
+
 exports.users_post = [
   body("email", "email must not be empty").trim().isLength({ min: 2 }).escape(),
   body("userName", "first name must not be empty")
@@ -44,6 +50,22 @@ exports.users_post = [
     });
   }),
 ];
+
+exports.user_update = asyncHandler(async (req, res) => {
+  const user = await getUserFromToken.get_user(req.headers['authorization'])
+  await prisma.user.update({
+    where: {
+      id: user.id
+    },
+    data: {
+      bio: req.body.text
+    }
+  }).catch(err => {console.log(err)})
+
+  res.json({
+    message: true
+  })
+})
 
 exports.user = asyncHandler(async (req, res) => {
   const user = await getUserFromToken.get_user(req.headers["authorization"]);
@@ -117,7 +139,7 @@ exports.follow = asyncHandler(async (req, res) => {
         push: user.id,
       },
     },
-  });
+  }).catch(err => {console.log(err)});
 
   await prisma.user.update({
     where: {
@@ -128,7 +150,7 @@ exports.follow = asyncHandler(async (req, res) => {
         push: req.body.id,
       },
     },
-  });
+  }).catch(err => {console.log(err)});
 
   res.json({
     message: true,
@@ -189,7 +211,7 @@ exports.search = asyncHandler(async (req, res) => {
     .findMany({
       where: {
         userName: {
-          search: req.params.text,
+          contains: req.params.text,
         },
       },
     })

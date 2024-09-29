@@ -18,9 +18,15 @@ router.post('/api/v1/users/username', User.username)
 
 router.get('/api/v1/users/search/:text', User.search)
 
+router.post('/api/v1/users/follow', User.follow)
+
+router.post('/api/v1/users/unfollow', User.unfollow)
+
 router.get('/api/v1/users', User.users_get);
 
 // router.get('/api/v1/users/:id', );
+
+router.post('/api/v1/users/update', User.user_update)
 
 router.post('/api/v1/users', User.users_post);
 
