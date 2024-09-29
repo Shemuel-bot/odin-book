@@ -6,7 +6,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const { ResultWithContextImpl } = require("express-validator/lib/chain");
-const getUserFromToken = require('../public/javascripts/getUserFromToken')
+const getUserFromToken = require("../public/javascripts/getUserFromToken");
 
 const prisma = new PrismaClient();
 
@@ -46,23 +46,23 @@ exports.users_post = [
 ];
 
 exports.user = asyncHandler(async (req, res) => {
-  const user = await getUserFromToken.get_user(req.headers['authorization'])
-  if(!user){
-    res.send(403)
+  const user = await getUserFromToken.get_user(req.headers["authorization"]);
+  if (!user) {
+    res.send(403);
   }
   res.json({
-    message: user
-  })
+    message: user,
+  });
 });
 
 exports.users_get = asyncHandler(async (req, res) => {
-  const user = await getUserFromToken.get_user(req.headers['authorization'])
+  const user = await getUserFromToken.get_user(req.headers["authorization"]);
   const users = await prisma.user.findMany({
-    where:{
-      NOT:{
-        id: user.id
-      }
-    }
+    where: {
+      NOT: {
+        id: user.id,
+      },
+    },
   });
   res.json({
     message: users,
@@ -100,13 +100,77 @@ exports.github = asyncHandler(async (req, res) => {
   const accessToken = tokenData.access_token;
 
   if (accessToken) {
-    // Use this access token to fetch user details or other tasks.
-    // Maybe generate a JWT and send it to the frontend for session management.
     res.json({ success: true, data: tokenData });
   } else {
     res.json({ success: false });
   }
 });
+
+exports.follow = asyncHandler(async (req, res) => {
+  const user = await getUserFromToken.get_user(req.headers["authorization"]);
+  await prisma.user.update({
+    where: {
+      id: req.body.id,
+    },
+    data: {
+      followers: {
+        push: user.id,
+      },
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      following: {
+        push: req.body.id,
+      },
+    },
+  });
+
+  res.json({
+    message: true
+  })
+});
+
+exports.unfollow = asyncHandler(async (req, res) => {
+  const user = await getUserFromToken.get_user(req.headers["authorization"]);
+  const array = await prisma.user.findFirst({
+    where: {
+      id: req.body.id,
+    },
+    select:{
+      followers: true,
+    }
+  }).catch(err => {console.log(err)})
+
+  array.followers.splice(array.followers.indexOf(user.id), 1)
+  user.following.splice(user.following.indexOf(req.body.id), 1)
+
+  await prisma.user.update({
+    where:{
+      id: req.body.id
+    },
+    data:{
+      followers: array.followers
+    }
+  }).catch(err => {console.log(err)})
+
+  await prisma.user.update({
+    where:{
+      id: user.id
+    },
+    data:{
+      following: user.following
+    }
+  }).catch(err => {console.log(err)})
+
+  res.json({
+    message: true
+  })
+})
 
 passport.use(
   new GitHubStrategy(

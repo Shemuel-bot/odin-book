@@ -12,22 +12,8 @@ const prisma = new PrismaClient();
 
 
 exports.posts_post = asyncHandler(async (req, res) => {
-    const bearerHeader = req.headers["authorization"];
-    const user = await fetch('https://api.github.com/user', {
-        method: 'GET',
-        headers: { "Authorization" : bearerHeader }
-    }).then(async res => {
-        const a = await res.json()
-
-        const result = await prisma.user.findFirst({
-            where: {
-                gitId: a.id,
-            }
-        })
-        return result
-    })
-    
-    if(req.body.img === "" && req.body.text ===""){
+    const user = await getUserFromToken.get_user(req.headers['authorization'])
+    if(req.body.text ===""){
         res.json({
             message: false,
         })
@@ -183,5 +169,34 @@ exports.posts_dislike = asyncHandler(async (req, res) => {
 
     res.json({
         message: true,
+    })
+})
+
+exports.following = asyncHandler(async (req, res)=> {
+    const posts = []
+    const user = await getUserFromToken.get_user(req.headers['authorization']).catch(err => {console.log(err)})
+    const users = await prisma.user.findMany({
+        where:{
+            followers:{
+                has: user.id
+            }
+        }
+    })
+
+    users.forEach(async x => {
+        const post = await prisma.post.findFirst({
+            where:{
+                username: x.userName
+            },
+            orderBy: {
+                date: 'desc'
+            }
+        })
+        posts.push(post)
+    })
+
+    res.json({
+        message: posts,
+        userId: user.id
     })
 })

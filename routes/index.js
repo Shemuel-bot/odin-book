@@ -42,6 +42,8 @@ router.get('/api/v1/users/posts/:username', Post.users_posts);
 
 router.get('/api/v1/user/posts/liked/:id', Post.user_posts_liked)
 
+router.get('/api/v1/posts/following', Post.following)
+
 router.get('/delete', Post.delete_all)
 
 router.post('/api/v1/posts/likes', Post.posts_like)
