@@ -131,46 +131,76 @@ exports.follow = asyncHandler(async (req, res) => {
   });
 
   res.json({
-    message: true
-  })
+    message: true,
+  });
 });
 
 exports.unfollow = asyncHandler(async (req, res) => {
   const user = await getUserFromToken.get_user(req.headers["authorization"]);
-  const array = await prisma.user.findFirst({
-    where: {
-      id: req.body.id,
-    },
-    select:{
-      followers: true,
-    }
-  }).catch(err => {console.log(err)})
+  const array = await prisma.user
+    .findFirst({
+      where: {
+        id: req.body.id,
+      },
+      select: {
+        followers: true,
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
-  array.followers.splice(array.followers.indexOf(user.id), 1)
-  user.following.splice(user.following.indexOf(req.body.id), 1)
+  array.followers.splice(array.followers.indexOf(user.id), 1);
+  user.following.splice(user.following.indexOf(req.body.id), 1);
 
-  await prisma.user.update({
-    where:{
-      id: req.body.id
-    },
-    data:{
-      followers: array.followers
-    }
-  }).catch(err => {console.log(err)})
+  await prisma.user
+    .update({
+      where: {
+        id: req.body.id,
+      },
+      data: {
+        followers: array.followers,
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
-  await prisma.user.update({
-    where:{
-      id: user.id
-    },
-    data:{
-      following: user.following
-    }
-  }).catch(err => {console.log(err)})
+  await prisma.user
+    .update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        following: user.following,
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   res.json({
-    message: true
-  })
-})
+    message: true,
+  });
+});
+
+exports.search = asyncHandler(async (req, res) => {
+  const users = await prisma.user
+    .findMany({
+      where: {
+        userName: {
+          search: req.params.text,
+        },
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  res.json({
+    message: users,
+  });
+});
 
 passport.use(
   new GitHubStrategy(

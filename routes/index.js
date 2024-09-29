@@ -16,6 +16,8 @@ router.post('/api/v1/users/github/callback', User.github);
 
 router.post('/api/v1/users/username', User.username)
 
+router.get('/api/v1/users/search/:text', User.search)
+
 router.get('/api/v1/users', User.users_get);
 
 // router.get('/api/v1/users/:id', );
