@@ -11,10 +11,14 @@ const getUserFromToken = require("../public/javascripts/getUserFromToken");
 const prisma = new PrismaClient();
 
 exports.users_delete = asyncHandler(async (req, res) => {
-  await prisma.user.deleteMany()
-  await prisma.post.delete()
-  await prisma.comment.delete()
-})
+  await prisma.user.deleteMany();
+  await prisma.post.deleteMany();
+  await prisma.comment.deleteMany();
+
+  res.json({
+    message: true,
+  });
+});
 
 exports.users_post = [
   body("email", "email must not be empty").trim().isLength({ min: 2 }).escape(),
@@ -52,25 +56,30 @@ exports.users_post = [
 ];
 
 exports.user_update = asyncHandler(async (req, res) => {
-  const user = await getUserFromToken.get_user(req.headers['authorization'])
-  await prisma.user.update({
-    where: {
-      id: user.id
-    },
-    data: {
-      bio: req.body.text
-    }
-  }).catch(err => {console.log(err)})
+  const user = await getUserFromToken.get_user(req.headers["authorization"]);
+  await prisma.user
+    .update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        bio: req.body.text,
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   res.json({
-    message: true
-  })
-})
+    message: true,
+  });
+});
 
 exports.user = asyncHandler(async (req, res) => {
   const user = await getUserFromToken.get_user(req.headers["authorization"]);
   if (!user) {
-    res.send(403);
+    res.sendStatus(403);
+    return;
   }
   res.json({
     message: user,
@@ -122,6 +131,28 @@ exports.github = asyncHandler(async (req, res) => {
   const accessToken = tokenData.access_token;
 
   if (accessToken) {
+    const user = await getUserFromToken.get_user("Bearer " + accessToken);
+    if (!user) {
+      await fetch("https://api.github.com/user", {
+        method: "GET",
+        headers: { Authorization: "Bearer " + accessToken },
+      })
+        .then((res) => {
+          return res.json();
+        })
+        .then(async (data) => {
+          await prisma.user.create({
+            data: {
+              gitId: Number(data.id),
+              userName: data.login,
+              img: data.avatar_url,
+              bio: "",
+              password: "",
+            },
+          }).catch(err => {console.log(err)});
+        }).catch(err => {console.log(err)});
+    }
+
     res.json({ success: true, data: tokenData });
   } else {
     res.json({ success: false });
@@ -130,27 +161,35 @@ exports.github = asyncHandler(async (req, res) => {
 
 exports.follow = asyncHandler(async (req, res) => {
   const user = await getUserFromToken.get_user(req.headers["authorization"]);
-  await prisma.user.update({
-    where: {
-      id: req.body.id,
-    },
-    data: {
-      followers: {
-        push: user.id,
+  await prisma.user
+    .update({
+      where: {
+        id: req.body.id,
       },
-    },
-  }).catch(err => {console.log(err)});
+      data: {
+        followers: {
+          push: user.id,
+        },
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      following: {
-        push: req.body.id,
+  await prisma.user
+    .update({
+      where: {
+        id: user.id,
       },
-    },
-  }).catch(err => {console.log(err)});
+      data: {
+        following: {
+          push: req.body.id,
+        },
+      },
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   res.json({
     message: true,
@@ -224,45 +263,20 @@ exports.search = asyncHandler(async (req, res) => {
   });
 });
 
-passport.use(
-  new GitHubStrategy(
-    {
-      clientID: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: "http://localhost:5173/feed",
-    },
-    async function (accessToken, refreshToken, profile, done) {
-      console.log(profile);
-      const currentUser = await prisma.user.findFirst({
-        where: {
-          gitId: Number(profile.id),
-        },
-      });
-      if (currentUser) {
-        await prisma.user.update({
-          where: {
-            id: currentUser.id,
-          },
-          data: {
-            img: profile.photos[0].value,
-          },
-        });
-        done(null, currentUser);
-      } else {
-        const newUser = await prisma.user.create({
-          data: {
-            gitId: Number(profile.id),
-            userName: profile.username,
-            img: profile.photos[0].value,
-            bio: "",
-            password: "",
-          },
-        });
-        done(null, newUser);
+exports.get_following = asyncHandler(async (req, res) => {
+  const user = await getUserFromToken.get_user(req.headers['authorization'])
+  const users = await prisma.user.findMany({
+    where: {
+      followers:{
+        has: user.id
       }
     }
-  )
-);
+  })
+
+  res.json({
+    message: users
+  })
+})
 
 passport.use(
   new LocalStrategy(async (userName, password, done) => {
