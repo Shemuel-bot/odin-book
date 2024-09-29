@@ -76,7 +76,7 @@ exports.user_update = asyncHandler(async (req, res) => {
 });
 
 exports.user = asyncHandler(async (req, res) => {
-  const user = await getUserFromToken.get_user(req.headers["authorization"]);
+  const user = await getUserFromToken.get_user(req.headers["authorization"]).catch(err => {console.log(err)});
   if (!user) {
     res.sendStatus(403);
     return;

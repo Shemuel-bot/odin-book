@@ -16,7 +16,7 @@ exports.get_user = async function getUser(header) {
             }
         })
         return user
-    })
+    }).catch(err => {console.log(err)})
 
     return result
 }
