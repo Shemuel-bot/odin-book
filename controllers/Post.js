@@ -197,7 +197,7 @@ exports.following = asyncHandler(async (req, res)=> {
 
 
     res.json({
-        message: posts,
+        message: conditions,
         userId: user.id
     })
 })
