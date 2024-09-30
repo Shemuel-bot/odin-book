@@ -173,7 +173,7 @@ exports.posts_dislike = asyncHandler(async (req, res) => {
 })
 
 exports.following = asyncHandler(async (req, res)=> {
-    const posts = []
+    const conditions = []
     const user = await getUserFromToken.get_user(req.headers['authorization']).catch(err => {console.log(err)})
     const users = await prisma.user.findMany({
         where:{
@@ -183,17 +183,18 @@ exports.following = asyncHandler(async (req, res)=> {
         }
     })
 
-    users.forEach(async x => {
-        const post = await prisma.post.findFirst({
-            where:{
-                username: x.userName
-            },
-            orderBy: {
-                date: 'desc'
-            }
+    users.forEach(x => {
+        conditions.push({
+            username: x.userName
         })
-        posts.push(post)
     })
+
+    const posts = await prisma.post.findMany({
+        where: {
+            OR:conditions
+        }
+    })
+
 
     res.json({
         message: posts,
