@@ -10,13 +10,9 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.get('/api/v1/users/delete', User.users_delete)
-
 router.get('/api/v1/user', User.user);
 
 router.post('/api/v1/users/github/callback', User.github);
-
-router.post('/api/v1/users/username', User.username)
 
 router.get('/api/v1/users/search/:text', User.search)
 
@@ -55,8 +51,6 @@ router.get('/api/v1/users/posts/:username', Post.users_posts);
 router.get('/api/v1/user/posts/liked/:id', Post.user_posts_liked)
 
 router.get('/api/v1/posts/following', Post.following)
-
-router.get('/delete', Post.delete_all)
 
 router.post('/api/v1/posts/likes', Post.posts_like)
 

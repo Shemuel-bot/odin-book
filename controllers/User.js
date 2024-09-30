@@ -1,8 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
 const { body, validationResult } = require("express-validator");
-const passport = require("passport");
-const GitHubStrategy = require("passport-github2").Strategy;
-const LocalStrategy = require("passport-local").Strategy;
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
 const { ResultWithContextImpl } = require("express-validator/lib/chain");
@@ -94,13 +91,6 @@ exports.users_get = asyncHandler(async (req, res) => {
   });
   res.json({
     message: users,
-  });
-});
-
-exports.username = asyncHandler(async (req, res) => {
-  passport.authenticate("local");
-  res.json({
-    message: req.isAuthenticated(),
   });
 });
 
@@ -274,40 +264,3 @@ exports.get_following = asyncHandler(async (req, res) => {
     message: users
   })
 })
-
-passport.use(
-  new LocalStrategy(async (userName, password, done) => {
-    try {
-      const user = await prisma.user.findFirst({
-        where: {
-          userName: userName,
-        },
-      });
-      if (!user) {
-        return done(null, false, { message: "Incorrect username" });
-      }
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) {
-        // passwords do not match!
-        return done(null, false, { message: "Incorrect password" });
-      }
-
-      return done(null, user);
-    } catch (err) {
-      return done(err);
-    }
-  })
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      id: id,
-    },
-  });
-  done(null, user);
-});
