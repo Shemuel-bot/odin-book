@@ -20,7 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://odin-book-frontend-eb98.vercel.app',
   credentials: true
 }));
 app.use(session({ secret: "cats", resave: false, saveUninitialized: true }));
