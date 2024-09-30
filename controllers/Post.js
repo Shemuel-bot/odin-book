@@ -189,13 +189,6 @@ exports.following = asyncHandler(async (req, res)=> {
         })
     })
 
-    const posts = await prisma.post.findMany({
-        where: {
-            OR:conditions
-        }
-    })
-
-
     res.json({
         message: conditions,
         userId: user.id
