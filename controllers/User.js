@@ -11,13 +11,10 @@ const getUserFromToken = require("../public/javascripts/getUserFromToken");
 const prisma = new PrismaClient();
 
 exports.users_delete = asyncHandler(async (req, res) => {
-  await prisma.user.deleteMany();
-  await prisma.post.deleteMany();
-  await prisma.comment.deleteMany();
-
+  const a = process.env.DATABASE_URL
   res.json({
-    message: true,
-  });
+    message: a
+  })
 });
 
 exports.users_post = [
