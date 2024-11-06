@@ -91,7 +91,7 @@ exports.users_get = asyncHandler(async (req, res) => {
   });
 
   const filteredUser = users.reduce(function (result, x) {
-    if (user.following.includes(x.id))
+    if (!user.following.includes(x.id))
       result.push(x) 
     return result
   }, [])
