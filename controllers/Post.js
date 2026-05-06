@@ -183,9 +183,23 @@ exports.following = asyncHandler(async (req, res)=> {
         }
     })
 
-    users.forEach(x => {
+    users.forEach(async x => {
+        const post = prisma.post.findFirst({
+            where:{
+                id:{
+                    equals: x.id
+                }
+            }
+        })
+
         conditions.push({
-            username: x.userName
+            id: x.id,
+            profile: x.img,
+            text: post.text,
+            likes: post.likes,
+            likesId: post.likesId,
+            username: x.userName,
+
         })
     })
 
