@@ -186,8 +186,8 @@ exports.following = asyncHandler(async (req, res)=> {
     users.forEach(async x => {
         const post = prisma.post.findFirst({
             where:{
-                id:{
-                    equals: x.id
+                username:{
+                    equals: x.userName
                 }
             }
         })
